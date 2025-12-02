@@ -68,7 +68,7 @@ client = Anthropic(api_key=API_KEY)
 
 # Test with simple message
 response = client.messages.create(
-    model="claude-3-sonnet-20240229",
+    model="claude-3-haiku-20240307",
     max_tokens=100,
     temperature=0.7,
     system="You are a helpful assistant.",
@@ -84,76 +84,6 @@ print(f"Stop reason: {response.stop_reason}")
 print(f"Usage - Input tokens: {response.usage.input_tokens}")
 print(f"Usage - Output tokens: {response.usage.output_tokens}")
 ```
-
-#### **Step 5: Explore Different Models**
-```python
-# Cell 3: Model Comparison
-models_to_test = [
-    "claude-3-haiku-20240307",  # Fastest
-    "claude-3-sonnet-20240229",  # Balanced
-    "claude-3-opus-20240229",    # Most capable
-]
-
-test_prompt = "Explain quantum computing in two sentences."
-
-for model in models_to_test:
-    print(f"\n{'='*50}")
-    print(f"Testing model: {model}")
-    print('='*50)
-    
-    try:
-        response = client.messages.create(
-            model=model,
-            max_tokens=150,
-            temperature=0.7,
-            messages=[
-                {"role": "user", "content": test_prompt}
-            ]
-        )
-        print(f"Response: {response.content[0].text[:200]}...")
-        print(f"Tokens used: {response.usage.total_tokens}")
-        print(f"Time taken: ~{len(response.content[0].text)/50:.2f} sec estimated")
-    except Exception as e:
-        print(f"Error with {model}: {str(e)[:100]}")
-```
-
-#### **Step 6: Error Handling & Rate Limits**
-```python
-# Cell 4: Robust API Handling
-import time
-from anthropic import APIError, RateLimitError
-
-def safe_claude_call(prompt, model="claude-3-haiku-20240307", max_retries=3):
-    """Make API call with retry logic"""
-    for attempt in range(max_retries):
-        try:
-            response = client.messages.create(
-                model=model,
-                max_tokens=500,
-                temperature=0.7,
-                messages=[
-                    {"role": "user", "content": prompt}
-                ]
-            )
-            return response
-            
-        except RateLimitError:
-            wait_time = (attempt + 1) * 2  # Exponential backoff
-            print(f"Rate limited. Waiting {wait_time} seconds...")
-            time.sleep(wait_time)
-            
-        except APIError as e:
-            print(f"API Error on attempt {attempt + 1}: {e}")
-            if attempt == max_retries - 1:
-                raise
-            time.sleep(1)
-            
-    return None
-
-# Test with error handling
-test_response = safe_claude_call("What are the benefits of renewable energy?")
-if test_response:
-    print("Success! Response:", test_response.content[0].text[:200])
 ```
 
 ### **Use Cases:**
