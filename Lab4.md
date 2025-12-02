@@ -84,7 +84,7 @@ print(f"Stop reason: {response.stop_reason}")
 print(f"Usage - Input tokens: {response.usage.input_tokens}")
 print(f"Usage - Output tokens: {response.usage.output_tokens}")
 ```
-```
+
 
 ### **Use Cases:**
 1. **API Integration Testing**: Verify Claude API connectivity
